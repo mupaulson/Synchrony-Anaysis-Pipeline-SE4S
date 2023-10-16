@@ -1,2 +1,6 @@
 .vscode
 __pycache__
+# Don't check in experimentation notebook
+create_visuals_experiment.ipynb
+# Don't check in generated plots
+*.png
