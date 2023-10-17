@@ -3,9 +3,10 @@ class AnimalData:
         self.animal_num = animal_num  # Extracted from the CSV filename
         self.cell_data = cell_data  # Dictionary where keys are cell names, and values are lists of (timestamp, value) tuples
 
-    def get_data_for_cell(self, cell):
+    def get_data_for_cell(self, cell, n = None):
         """Return a list of (timestamp, value) tuples for the specified cell."""
-        return self.cell_data.get(cell, [])
+        data = self.cell_data.get(cell, [])
+        return data[:n] if n else data
 
     def get_data_at_time(self, timestamp):
         """Return a dictionary where keys are cells and values are measurements at the specified timestamp."""
