@@ -85,7 +85,10 @@ def main():
     parser.add_argument("-f", "--file_name", type=str, required=True,
                         help="file name/path of correlation matrix r values")
     parser.add_argument('-o', '--out_file', type=str,
-                        help='path/name for output file',
+                        help='path/name for cell pairs output file',
+                        required=True)
+    parser.add_argument('-s', '--sorted_out_file', type=str,
+                        help='path/name for sorted corr matrix output file',
                         required=True)
     parser.add_argument('-q', '--query', type=str,
                         help='sig or top', required=True)
@@ -124,6 +127,10 @@ def main():
         for e in cell_pairs:
             f.write(str(e) + '\n')
         f.close()
+    
+    sorted_df = pd.DataFrame(sorted_matrix)
+    sorted_df.to_csv(args.sorted_out_file)
+
 
 if __name__ == '__main__':
     main()
