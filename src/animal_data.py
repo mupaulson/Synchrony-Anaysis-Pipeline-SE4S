@@ -12,8 +12,22 @@ class AnimalData:
 
     def get_data_at_time(self, timestamp):
         """Return a dictionary where keys are cells and values are measurements at the specified timestamp."""
-        return {cell: next((t, v) for t, v in values if t == timestamp) for cell, values in self.cell_data.items()}
-
+        result = {}
+        
+        for cell, values in self.cell_data.items():
+            matching_data = None
+            for t, v in values:
+                if t == timestamp:
+                    matching_data = (t, v)
+                    break
+                    
+            if matching_data is None:
+                matching_data = (None, None)
+                
+            result[cell] = matching_data
+            
+        return result
+    
     def remap_time_values(self):
         """Remap the timestamps so they start from 0 and increase in fixed intervals."""
 
