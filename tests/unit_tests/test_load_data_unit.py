@@ -1,12 +1,21 @@
 import unittest
+import sys
+
+sys.path.insert(0, '../../src')  # noqa
 from animal_data import AnimalData
+
+sys.path.insert(0, '../../src')  # noqa
 from load_data import adjust_timestamps
 
 class LoadDataTests(unittest.TestCase):
 
     def setUp(self):
-        self.animal1 = AnimalData.from_csv("../data/4659-test2.csv")
-        self.animal2 = AnimalData.from_csv("../data/4807-test2.csv")
+        self.animal1 = AnimalData.from_csv("../../data/4659-test2.csv")
+        self.animal2 = AnimalData.from_csv("../../data/4807-test2.csv")
+
+        # Perform remapping
+        self.animal1.remap_time_values()
+        self.animal2.remap_time_values()
 
     def test_adjust_timestamps(self):
         # Initial test to see if timestamps adjust within the threshold
