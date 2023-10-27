@@ -1,13 +1,44 @@
 from animal_data import AnimalData
 
-# # Create an instance from the CSV
-# animal_data = AnimalData.from_csv('../data/4659-test1.csv')
+THRESHOLD = 0.01 # 1/100 of a second
 
-animal_data = AnimalData.from_csv_and_remap("../data/4659-test1.csv")
-animal_data.save_to_csv("../data/4659-test1.csv")
+def adjust_timestamps(data1, data2):
+    """Adjust timestamps of the two datasets if they are within the threshold."""
+    # Assume that both datasets have the same number of timestamps
+    for i in range(len(data1.cell_data["C000"])):  # Using 'C000' as a reference for timestamps
+        timestamp1 = data1.cell_data["C000"][i][0]
+        timestamp2 = data2.cell_data["C000"][i][0]
 
-# Get data for a specific cell
-print(animal_data.get_data_for_cell('C000', 10))
+        if abs(timestamp1 - timestamp2) <= THRESHOLD:
+            # Set them to the average, rounded to nearest 0.01
+            avg_timestamp = round((timestamp1 + timestamp2) / 2, 2)
 
-# Get data for all cells at a specific timestamp
-print(animal_data.get_data_at_time(1650475072.560337))
+            # Update the timestamps in both datasets
+            for cell in data1.cell_data:
+                t, v = data1.cell_data[cell][i]
+                data1.cell_data[cell][i] = (avg_timestamp, v)
+            for cell in data2.cell_data:
+                t, v = data2.cell_data[cell][i]
+                data2.cell_data[cell][i] = (avg_timestamp, v)
+
+# Load and remap CSVs
+animal1_data = AnimalData.from_csv_and_remap("../data/4659-test2.csv")
+animal2_data = AnimalData.from_csv_and_remap("../data/4807-test2.csv")
+
+# Adjust their timestamps
+adjust_timestamps(animal1_data, animal2_data)
+
+# Save time adjusted datasets
+animal1_data.save_to_csv("../data/4659-test2-remap.csv")
+animal2_data.save_to_csv("../data/4807-test2-remap.csv")
+
+print("CSVs remapped and saved successfully.")
+
+
+
+
+# # Get data for a specific cell
+# print(animal_data.get_data_for_cell('C000', 10)) # first ten results for C000
+
+# # Get data for all cells at a specific timestamp
+# print(animal_data.get_data_at_time(0.0))
