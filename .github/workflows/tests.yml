@@ -24,7 +24,8 @@ jobs:
       - name: Run unit tests
         run: |
           cd tests/unit_tests
-          python3 -m unittest test_my_utils.py
+          python3 -m unittest test_load_data_unit.py
+          python3 -m unittest test_animal_data_unit.py
 
   run_func_tests:
     runs-on: ubuntu-latest
@@ -39,7 +40,8 @@ jobs:
       - name: Run functional tests
         run: |
           cd tests/functional_tests
-          ./test_print_fires.sh 
+          python3 -m unittest test_load_data_functional.py
+          python3 -m unittest test_animal_data_functional.py
 
   run_style_tests:
     runs-on: ubuntu-latest
