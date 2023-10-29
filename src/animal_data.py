@@ -1,4 +1,5 @@
 import csv
+import sys
 
 class AnimalData:
     def __init__(self, animal_num, cell_data):
@@ -64,19 +65,33 @@ class AnimalData:
     @classmethod
     def from_csv(cls, filepath):
         """Class method to create an AnimalData instance from a CSV file."""
-        animal_num = filepath.split('.')[0]
+        filename = filepath.split("/")[-1]
+        animal_num_str = filename[:4]
 
-        with open(filepath, 'r') as file:
-            reader = csv.reader(file)
-            header = next(reader)
-            header = [cell.strip() for cell in header]  # This line is added to remove whitespace
-            _ = next(reader)  # Skip the cell status row
+        try:
+            animal_num = int(animal_num_str)
+        except ValueError as e:
+            print(f"Error converting animal number to integer: {e}")
 
-            cell_data = {cell: [] for cell in header[1:]}
+        try:
+            with open(filepath, 'r') as file:
+                reader = csv.reader(file)
+                header = next(reader)
+                header = [cell.strip() for cell in header]  # This line is added to remove whitespace
+                _ = next(reader)  # Skip the cell status row
 
-            for row in reader:
-                timestamp = float(row[0])
-                for i, value in enumerate(row[1:], 1):
-                    cell_data[header[i]].append((timestamp, float(value)))
+                cell_data = {cell: [] for cell in header[1:]}
 
-        return cls(animal_num, cell_data)
+                for row in reader:
+                    timestamp = float(row[0])
+                    for i, value in enumerate(row[1:], 1):
+                        cell_data[header[i]].append((timestamp, float(value)))
+
+            return cls(animal_num, cell_data)
+        
+        except FileNotFoundError:
+            print(f"Could not find {filepath}")
+            sys.exit(3)  # File not found
+        except PermissionError:
+            print(f"Could not open {filepath}")
+            sys.exit(3)  # Permission error

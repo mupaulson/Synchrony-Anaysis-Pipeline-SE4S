@@ -40,25 +40,16 @@ def main():
     remap = args.r
     output_filename = args.o
 
-    try:
-        # Load CSVs
-        animal_data = AnimalData.from_csv(str(input_filename))
+    # Load CSVs
+    animal_data = AnimalData.from_csv(str(input_filename))
 
-        # Adjust the timestamps
-        if remap:
-            animal_data.remap_time_values()
+    # Adjust the timestamps
+    if remap:
+        animal_data.remap_time_values()
 
-        # Save time adjusted datasets
-        animal_data.save_to_csv(str(output_filename))
-        print("CSVs remapped and saved successfully.")
-
-    except FileNotFoundError:
-        print(f"Could not find {input_filename}")
-        sys.exit(3)  # File not found
-    except PermissionError:
-        print(f"Could not open {input_filename}")
-        sys.exit(3)  # Permission error
-
+    # Save time adjusted datasets
+    animal_data.save_to_csv(str(output_filename))
+    print("CSVs remapped and saved successfully.")
 
 if __name__ == "__main__":
     main()
