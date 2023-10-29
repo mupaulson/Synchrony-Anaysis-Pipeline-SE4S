@@ -6,23 +6,8 @@ import argparse
 import sys
 
 
+# from cell_slicer.py
 def cell_query(r_data, query, p_data=None, x_per=None, alpha=0.05):
-    """
-    cell_query takes correlation matrix and finds cell names
-    that match a query and outputs a 2d list of cell pair names
-    Args:
-        r_data: dataframe of correlation matrix r values
-        query: 'sig' or 'top' (str) 
-              sig is all cell pairs with significant correlation
-              top is top x percent of cell pair correlations
-        p_data: dataframe of correlation matrix p values, default=None,
-        specify if using sig as query
-        x_per: x percent value (int), defalt=None, specify if using top as query
-        alpha: significance cutoff, defalt=0.05
-    Returns: 
-        cell_pairs: a 2d list of cell pairs
-        sorted_mat: a series object of sorted correlation values where the index is cell pairs
-    """
     #  sorting correlation df code from geeksforgeeks
     # Retain upper triangular values of correlation matrix and 
     # make Lower triangular values Null 
@@ -32,8 +17,10 @@ def cell_query(r_data, query, p_data=None, x_per=None, alpha=0.05):
     # Convert to 1-D series and drop Null values 
     unique_corr_pairs = upper_corr_mat.unstack().dropna() 
 
-    # Sort correlation pairs 
-    sorted_mat = unique_corr_pairs.sort_values() 
+    # Sort correlation pairs, need to keep values but sort based on absolute value 
+    order = unique_corr_pairs.abs().sort_values(ascending = False)
+    ind = order.index
+    sorted_mat = unique_corr_pairs[ind] 
     # sorted cell pairs, python dicts are now sorted so this works to keep sorted order
     sorted_cps =sorted_mat.keys()
     # slice based on correlation signinficance:
@@ -53,12 +40,19 @@ def cell_query(r_data, query, p_data=None, x_per=None, alpha=0.05):
                 p_unique_corr_pairs = p_upper_corr_mat.unstack().dropna() 
 
                 # Sort correlation pairs 
-                p_sorted_mat = p_unique_corr_pairs.sort_values() 
+                p_sorted_mat = p_unique_corr_pairs.sort_values()
                 # sorted cell pairs, python dicts are now sorted so this works to keep sorted order
                 p_sorted_cps =sorted_mat.keys()
-                sig_cell_pairs = p_sorted_mat.loc[:, p_sorted_mat.loc[:] < 0.05] #might make alpha arg
+                sig_cell_pairs = p_sorted_mat.loc[:, p_sorted_mat.loc[:] < alpha] 
                 x_len = len(sig_cell_pairs)
-                
+                cell_pairs = []
+                for i in range(x_len):
+                    cells= sorted_cps[i]
+                    cell_pairs.append(cells)
+                return cell_pairs, sorted_mat, p_sorted_mat
+            except:
+                print('some error happened here')
+                return None
                 
     #  slice based on top x percent
     elif query == 'top':
@@ -66,17 +60,21 @@ def cell_query(r_data, query, p_data=None, x_per=None, alpha=0.05):
             print('Error: if query is top must input x_per')
             return None
         else:
+            per = x_per/100
             l = len(sorted_cps)
-            x_len = round(l*x_per)
+            x_len = round(l*per)
+            print(l)
+            print(x_len)
+            cell_pairs = []
+            for i in range(x_len):
+                cells= sorted_cps[i]
+                cell_pairs.append(cells)
+            return cell_pairs, sorted_mat
             
     else:
         print('Error: query must be sig or top')
         return None
-    cell_pairs = []
-    for i in range(x_len):
-        cells= sorted_cps[i]
-        cell_pairs.append(cells)
-    return cell_pairs, sorted_mat
+
 
 def main():
     parser = argparse.ArgumentParser(

@@ -14,13 +14,13 @@ def normalize_df(ani_data):
          class structure
     Returns: dfn, a dataframe of normalized data
     """
-    cells = animal_data.cell_data.keys()
-    df = df_utils.animal_data_to_df(animal_data, cells)
+    cells = ani_data.cell_data.keys()
+    df = df_utils.animal_data_to_df(ani_data, cells)
     m = np.max(df)
     dfn= pd.DataFrame()
     cols = df.columns
     for i in range (len(cols)):
-        dfn[cols[i]] = (df[cols[i]]/m[i])
+        dfn[cols[i]] = (df[cols[i]]/m[i]) #this line is throwing warnings like crazy, try to figure out someting better
     return dfn
 
 def main():
