@@ -29,18 +29,16 @@ class AnimalData:
         return result
     
     def remap_time_values(self):
-        """Remap the timestamps so they start from 0 and increase in fixed intervals."""
+        """Remap the timestamps so they start from 0 and round to the nearest 1/100 second."""
 
-        # Assuming consistent time intervals, determine the interval from the first two timestamps
-        first_cell = next(iter(self.cell_data.values()))
-        time_interval = first_cell[1][0] - first_cell[0][0]
-
-        # Get the starting time from the first data point of the first cell
-        start_time = first_cell[0][0]
-
+        first_timestamp = self.cell_data["C000"][0][0] # the first timestamp
         # Remap the timestamps in the cell_data dictionary
         for cell, values in self.cell_data.items():
-            self.cell_data[cell] = [(t - start_time, v) for t, v in values]
+            new_values = []
+            for t, v in values:
+                adjusted_timestamp = round(t - first_timestamp, 2)
+                new_values.append((adjusted_timestamp, v))
+            self.cell_data[cell] = new_values
 
     def save_to_csv(self, output_path):
         """Save the cell data to a CSV file."""
@@ -82,10 +80,3 @@ class AnimalData:
                     cell_data[header[i]].append((timestamp, float(value)))
 
         return cls(animal_num, cell_data)
-
-    @classmethod
-    def from_csv_and_remap(cls, filepath):
-        """Class method to create an AnimalData instance from a CSV file and then remap the timestamps."""
-        instance = cls.from_csv(filepath)
-        instance.remap_time_values()
-        return instance
