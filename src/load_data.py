@@ -1,5 +1,6 @@
 from animal_data import AnimalData
 import argparse
+import sys
 
 def get_args():
     """ Returns arguments passed through the command line.
@@ -39,17 +40,25 @@ def main():
     remap = args.r
     output_filename = args.o
 
-    # Load CSVs
-    animal_data = AnimalData.from_csv(str(input_filename))
+    try:
+        # Load CSVs
+        animal_data = AnimalData.from_csv(str(input_filename))
 
-    # Adjust the timestamps
-    if remap:
-        animal_data.remap_time_values()
+        # Adjust the timestamps
+        if remap:
+            animal_data.remap_time_values()
 
-    # Save time adjusted datasets
-    animal_data.save_to_csv(str(output_filename))
+        # Save time adjusted datasets
+        animal_data.save_to_csv(str(output_filename))
+        print("CSVs remapped and saved successfully.")
 
-    print("CSVs remapped and saved successfully.")
+    except FileNotFoundError:
+        print(f"Could not find {input_filename}")
+        sys.exit(3)  # File not found
+    except PermissionError:
+        print(f"Could not open {input_filename}")
+        sys.exit(3)  # Permission error
+
 
 if __name__ == "__main__":
     main()
