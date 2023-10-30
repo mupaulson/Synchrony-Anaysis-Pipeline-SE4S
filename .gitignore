@@ -4,3 +4,4 @@ __pycache__
 create_visuals_experiment.ipynb
 # Don't check in generated plots
 *.png
+ssshtest
