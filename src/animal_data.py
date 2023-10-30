@@ -37,7 +37,7 @@ class AnimalData:
         for cell, values in self.cell_data.items():
             new_values = []
             for t, v in values:
-                adjusted_timestamp = round(t - first_timestamp, 2)
+                adjusted_timestamp = round(t - first_timestamp, 3)
                 new_values.append((adjusted_timestamp, v))
             self.cell_data[cell] = new_values
 
