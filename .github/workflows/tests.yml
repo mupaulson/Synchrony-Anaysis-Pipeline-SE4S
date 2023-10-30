@@ -3,7 +3,7 @@ name: Tests
 on:
   push:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   run_unit_tests:
@@ -24,8 +24,7 @@ jobs:
       - name: Run unit tests
         run: |
           cd tests/unit_tests
-          python3 -m unittest test_load_data_unit.py
-          python3 -m unittest test_animal_data_unit.py
+          python3 -m unittest test_animal_data.py
 
   run_func_tests:
     runs-on: ubuntu-latest
@@ -40,26 +39,25 @@ jobs:
       - name: Run functional tests
         run: |
           cd tests/functional_tests
-          python3 -m unittest test_load_data_functional.py
-          python3 -m unittest test_animal_data_functional.py
+          ./test_load_data.sh
 
-  run_style_tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  # run_style_tests:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
       
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
+  #     - name: Set up Python
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: '3.x'
   
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+  #     - name: Install dependencies
+  #       run: |
+  #         python -m pip install --upgrade pip
+  #         pip install -r requirements.txt
   
-      - name: Install pylint
-        run: pip install pylint
+  #     - name: Install pylint
+  #       run: pip install pylint
   
-      - name: Run pylint
-        run: pylint src/
+  #     - name: Run pylint
+  #       run: pylint src/

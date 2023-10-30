@@ -17,13 +17,14 @@ Team Members: Maya Paulson, Emma Keppler, Deanna Gelosi, and Philipp Wunsch
 - Function `save_to_csv()` saves the AnimalData class object to a new CSV file
 - Function `from_csv()` loads initial CSV file into an AnimalData class object
 - Unit and functional testing for loading CSV
+- Setup continuous integration yaml file for unit and functional tests
 
 **ToDo**
 
 - Additional unit and functional testing for `animal_data.py` and `load_data.py`
 - NAN if no cell value (numpy)
 - Run pylint style tests
-- Setup continuous integration
+- Enable style tests in continuous integration
 
 ### Normalization and Cell Slicing functions
 
