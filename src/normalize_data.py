@@ -5,23 +5,34 @@ import df_utils
 import argparse
 
 
-def normalize_df(ani_data):
+def normalize_df(ani_data, cells=None):
     """
     Normalizes cell df/f data by dividing each cell column
     by the max value in each column so that each cells max
     value in the normalized df is 1.
-    Arg: ani_data- data from session in AnimalData 
-         class structure
+    Args: 
+        ani_data: data from session in AnimalData 
+             class structure
+        cells: list of cells names (str) to normalize, 
+            defalt=None will normalize all cells in dataset
     Returns: dfn, a dataframe of normalized data
     """
-    cells = ani_data.cell_data.keys()
+    if cells is None:
+        cells = ani_data.cell_data.keys()
     df = df_utils.animal_data_to_df(ani_data, cells)
-    m = np.max(df)
-    dfn= pd.DataFrame()
-    cols = df.columns
-    for i in range (len(cols)):
-        dfn[cols[i]] = (df[cols[i]]/m[i]) #this line is throwing warnings like crazy, try to figure out someting better
-    return dfn
+    if df is None:
+        print('unable to normalize data if unable to convert to dataframe')
+        return None
+    try:    
+        m = df.max(axis=0)
+        dfn= pd.DataFrame()
+        cols = df.columns
+        for i in range (len(cols)):
+            dfn[cols[i]] = (df[cols[i]]/m[i]) #this line is throwing warnings like crazy, try to figure out someting better
+        return dfn
+    except TypeError:
+        print('df values are not numbers')
+        return None
 
 def main():
     

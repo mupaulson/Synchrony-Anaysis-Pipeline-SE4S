@@ -8,14 +8,9 @@ import sys
 
 # from cell_slicer.py
 def cell_query(r_data, query, p_data=None, x_per=None, alpha=0.05):
-    #  sorting correlation df code from geeksforgeeks
-    # Retain upper triangular values of correlation matrix and 
-    # make Lower triangular values Null 
-    upper_corr_mat = r_data.where( 
-        np.triu(np.ones(r_data.shape), k=1).astype(np.bool)) 
 
     # Convert to 1-D series and drop Null values 
-    unique_corr_pairs = upper_corr_mat.unstack().dropna() 
+    unique_corr_pairs = r_data.unstack().dropna()
 
     # Sort correlation pairs, need to keep values but sort based on absolute value 
     order = unique_corr_pairs.abs().sort_values(ascending = False)
@@ -33,11 +28,8 @@ def cell_query(r_data, query, p_data=None, x_per=None, alpha=0.05):
             return None
         else:
             try:
-                p_upper_corr_mat = p_data.where( 
-                    np.triu(np.ones(r_data.shape), k=1).astype(np.bool)) 
-
                 # Convert to 1-D series and drop Null values 
-                p_unique_corr_pairs = p_upper_corr_mat.unstack().dropna() 
+                p_unique_corr_pairs = p_data.unstack().dropna() 
 
                 # Sort correlation pairs 
                 p_sorted_mat = p_unique_corr_pairs.sort_values()
