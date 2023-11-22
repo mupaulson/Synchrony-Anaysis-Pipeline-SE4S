@@ -28,39 +28,27 @@ class AnimalData:
             result[cell] = matching_data
             
         return result
-    
-    def remap_time_values(self):
-        """Remap the timestamps so they start from 0 and round to the nearest 1/100 second."""
-
-        first_timestamp = self.cell_data["C000"][0][0] # the first timestamp
-        # Remap the timestamps in the cell_data dictionary
-        for cell, values in self.cell_data.items():
-            new_values = []
-            for t, v in values:
-                adjusted_timestamp = round(t - first_timestamp, 3)
-                new_values.append((adjusted_timestamp, v))
-            self.cell_data[cell] = new_values
 
     def save_to_csv(self, output_path):
         """Save the cell data to a CSV file."""
         # Extract headers
         cells = list(self.cell_data.keys())
-        headers = ['Time(s)'] + cells
+        headers = ['Unnamed: 0', 'time', 'elapsed'] + cells  # Updated headers
 
         # Prepare rows
         # Assume all cells have the same number of timestamps; use the first cell as reference
         rows = []
-        for i in range(len(self.cell_data[cells[0]])):
-            row = [self.cell_data[cells[0]][i][0]]  # Start with the timestamp
+        for i, (timestamp, elapsed_time) in enumerate(self.cell_data[cells[0]]):
+            row = [i, timestamp, elapsed_time]  # Start with index, timestamp, and elapsed time
             for cell in cells:
-                row.append(self.cell_data[cell][i][1])  # Add each cell's value at that timestamp
+                row.append(self.cell_data[cell][i][1])  # Add cell values
             rows.append(row)
 
-        # Write data to CSV
+        # Write to CSV
         with open(output_path, 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(headers)  # Write the header
-            writer.writerows(rows)    # Write the data rows
+            writer.writerow(headers)  # Write header
+            writer.writerows(rows)  # Write data rows
 
     @classmethod
     def from_csv(cls, filepath):
@@ -76,22 +64,23 @@ class AnimalData:
         try:
             with open(filepath, 'r') as file:
                 reader = csv.reader(file)
-                header = next(reader)
-                header = [cell.strip() for cell in header]  # This line is added to remove whitespace
-                _ = next(reader)  # Skip the cell status row
+                header = next(reader)  # Read the header row
+                header = [cell.strip() for cell in header]
+                start_cell_columns = header[3:]
 
-                cell_data = {cell: [] for cell in header[1:]}
+                cell_data = {cell: [] for cell in start_cell_columns} # Cell data starts from the 4th column
 
                 for row in reader:
-                    timestamp = float(row[0])
-                    for i, value in enumerate(row[1:], 1):
-                        cell_data[header[i]].append((timestamp, float(value)))
+                    timestamp = float(row[1])  # Timestamp is the second column
+                    values = row[3:]  # Extracting cell data values
+                    for cell, value in zip(start_cell_columns, values):
+                        cell_data[cell].append((timestamp, float(value)))
 
-            return cls(animal_num, cell_data)
-        
-        except FileNotFoundError:
-            print(f"Could not find {filepath}")
-            sys.exit(3)  # File not found
-        except PermissionError:
-            print(f"Could not open {filepath}")
-            sys.exit(3)  # Permission error
+        except FileNotFoundError as e:
+            print(f"File not found: {e}")
+            sys.exit(1)
+        except Exception as e:
+            print(f"Error reading from file: {e}")
+            sys.exit(1)
+
+        return cls(animal_num, cell_data)
