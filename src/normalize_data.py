@@ -9,11 +9,11 @@ def normalize_df(ani_data, cells=None):
     """
     Normalizes cell df/f data by dividing each cell column
     by the max value in each column so that each cells max
-    value in the normalized df is 1.
-    Args: 
-        ani_data: data from session in AnimalData 
+    value in the normalized dataframe is 1.
+    Args:
+        ani_data: data from session in AnimalData
              class structure
-        cells: list of cells names (str) to normalize, 
+        cells: list of cells names (str) to normalize,
             defalt=None will normalize all cells in dataset
     Returns: dfn, a dataframe of normalized data
     """
@@ -23,22 +23,18 @@ def normalize_df(ani_data, cells=None):
     if df is None:
         print('unable to normalize data if unable to convert to dataframe')
         return None
-    try:    
-        m = df.max(axis=0)
-        dfn= pd.DataFrame()
-        cols = df.columns
-        for i in range (len(cols)):
-            dfn[cols[i]] = (df[cols[i]]/m[i]) #this line is throwing warnings like crazy, try to figure out someting better
+    try:
+        max_values = df.max(axis=0)
+        dfn = df / max_values
         return dfn
     except TypeError:
         print('df values are not numbers')
         return None
 
+
 def main():
-    
-    parser = argparse.ArgumentParser(
-        description="Normalize data."
-    )
+
+    parser = argparse.ArgumentParser(description="Normalize data.")
     parser.add_argument("-f", "--file_name", type=str, required=True,
                         help="file name/path of data")
     parser.add_argument('-o', '--out_file', type=str,
@@ -46,7 +42,7 @@ def main():
                         required=True)
     args = parser.parse_args()
 
-    #  pull un-normalized df from animal data
+    #  pull un-normalized df from animal data structure
     ani_data = ad.AnimalData(args.file_name)
     norm_df = normalize_df(ani_data)
     norm_df.to_csv(args.out_file)
