@@ -36,12 +36,11 @@ class AnimalData:
         headers = ['Unnamed: 0', 'time', 'elapsed'] + cells  # Updated headers
 
         # Prepare rows
-        # Assume all cells have the same number of timestamps; use the first cell as reference
         rows = []
-        for i, (timestamp, elapsed_time) in enumerate(self.cell_data[cells[0]]):
+        for i, (timestamp, elapsed_time, _) in enumerate(self.cell_data[cells[0]]):  # Extracting timestamp and elapsed_time
             row = [i, timestamp, elapsed_time]  # Start with index, timestamp, and elapsed time
             for cell in cells:
-                row.append(self.cell_data[cell][i][1])  # Add cell values
+                row.append(self.cell_data[cell][i][2])  # Add cell values (third element in tuple)
             rows.append(row)
 
         # Write to CSV
@@ -53,14 +52,6 @@ class AnimalData:
     @classmethod
     def from_csv(cls, filepath):
         """Class method to create an AnimalData instance from a CSV file."""
-        filename = filepath.split("/")[-1]
-        animal_num_str = filename[:4]
-
-        try:
-            animal_num = int(animal_num_str)
-        except ValueError as e:
-            print(f"Error converting animal number to integer: {e}")
-
         try:
             with open(filepath, 'r') as file:
                 reader = csv.reader(file)
@@ -72,9 +63,10 @@ class AnimalData:
 
                 for row in reader:
                     timestamp = float(row[1])  # Timestamp is the second column
+                    elapsed_time = float(row[2])  # Elapsed time is the third column
                     values = row[3:]  # Extracting cell data values
                     for cell, value in zip(start_cell_columns, values):
-                        cell_data[cell].append((timestamp, float(value)))
+                        cell_data[cell].append((timestamp, elapsed_time, float(value)))
 
         except FileNotFoundError as e:
             print(f"File not found: {e}")
@@ -82,5 +74,14 @@ class AnimalData:
         except Exception as e:
             print(f"Error reading from file: {e}")
             sys.exit(1)
+
+        # Extract animal number from filename
+        filename = filepath.split("/")[-1]
+        animal_num_str = filename[:4]
+
+        try:
+            animal_num = int(animal_num_str)
+        except ValueError as e:
+            print(f"Error converting animal number to integer: {e}")
 
         return cls(animal_num, cell_data)
