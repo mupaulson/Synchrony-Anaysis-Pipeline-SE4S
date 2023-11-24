@@ -68,13 +68,13 @@ class AnimalData:
                     for cell, value in zip(start_cell_columns, values):
                         cell_data[cell].append((timestamp, elapsed_time, float(value)))
 
-        except FileNotFoundError as e:
-            print(f"File not found: {e}")
+        except FileNotFoundError:
+            sys.stderr.write("File not found\n")
             sys.exit(1)
         except Exception as e:
             print(f"Error reading from file: {e}")
             sys.exit(1)
-
+        
         # Extract animal number from filename
         filename = filepath.split("/")[-1]
         animal_num_str = filename[:4]
