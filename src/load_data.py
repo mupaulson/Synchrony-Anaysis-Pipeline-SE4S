@@ -1,5 +1,6 @@
 from animal_data import AnimalData
 import argparse
+import sys
 
 def get_args():
     """ Returns arguments passed through the command line.
@@ -29,17 +30,22 @@ def get_args():
     return args
 
 def main():
-    args = get_args()
+    try:
+        args = get_args()
 
-    input_filename = args.i
-    output_filename = args.o
+        input_filename = args.i
+        output_filename = args.o
 
-    # Load CSVs
-    animal_data = AnimalData.from_csv(str(input_filename))
+        # Load CSVs
+        animal_data = AnimalData.from_csv(str(input_filename))
 
-    # Save time adjusted datasets
-    animal_data.save_to_csv(str(output_filename))
-    print("CSVs loaded and saved successfully.")
+        # Save time adjusted datasets
+        animal_data.save_to_csv(str(output_filename))
+        print("CSVs loaded and saved successfully.")
+
+    except Exception as e:  # Replace with more specific exceptions if known
+        sys.stderr.write(f"Error: {e}\n")
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
