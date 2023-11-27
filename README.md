@@ -44,6 +44,38 @@ Team Members: Maya Paulson, Emma Keppler, Deanna Gelosi, and Philipp Wunsch
 
 ### Visualization of Synchrony Analysis Pipeline Part
 
+This tool is designed to visualize neural activity data, offering insightful and detailed plots that aid in understanding complex neural patterns. It supports two primary types of visualizations:
+
+1. Line Plot: Shows neural activity over time for selected cells.
+2. Heatmap: Visualizes the correlation matrix of neural activity among different cells.
+
+***Example Usage:***
+
+```bash
+python create_plots.py -f [data_file.csv] -c [cell_names] -o [output_filename.png] -p [plot_type]
+```
+
+    -f, --file: Path to the data CSV file (required).
+    -c, --cells: List of cell names for the plot (required).
+    -o, --output: Filename for the output (default "output.png").
+    -p, --plot_type: Type of plot (line or correlation, default line).
+
+***1. Line Plot***
+
+```bash
+python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 C002 -o line_plot.png -p line
+```
+
+![example_line_plot](docs/example_line_plot.png)
+
+
+***2. Correlation Matrix Heatmap Plot***
+
+```bash
+python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 C003 -o correlation_matrix.png -p correlation
+```
+![example_correlation_matrix](docs/example_correlation_matrix.png)
+
 **Implemented**
 
 - create_plots.py: Line plot and correlation plot
@@ -54,10 +86,6 @@ Team Members: Maya Paulson, Emma Keppler, Deanna Gelosi, and Philipp Wunsch
 **ToDo**
 
 - Create unit tests for each function
-- Create functional tests
-- Handle exceptions
-
-
 
 
 ## Testing

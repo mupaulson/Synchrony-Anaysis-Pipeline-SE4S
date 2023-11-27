@@ -25,6 +25,7 @@ jobs:
         run: |
           cd tests/unit_tests
           python3 -m unittest test_animal_data.py
+          python3 -m unittest test_create_plots.py
 
   run_func_tests:
     runs-on: ubuntu-latest
