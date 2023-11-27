@@ -1,5 +1,6 @@
 # Get the ssshtest framework
 test -e ssshtest || curl -O https://raw.githubusercontent.com/ryanlayer/ssshtest/master/ssshtest
+
 . ssshtest
 
 # Test successful line plot creation

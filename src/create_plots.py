@@ -24,6 +24,7 @@ import seaborn as sns
 
 from animal_data import AnimalData
 
+
 def create_line_plot(data, cells, output_filename):
     """Generates line plot of neural activity over time for cells."""
     plt.figure(figsize=(12, 7))
