@@ -39,7 +39,7 @@ jobs:
       - name: Run functional tests
         run: |
           cd tests/functional_tests
-          chmod +x tests/functional_tests/test_create_plots.sh
+          chmod +x test_create_plots.sh
           ./test_load_data.sh
           ./test_create_plots.sh
 
