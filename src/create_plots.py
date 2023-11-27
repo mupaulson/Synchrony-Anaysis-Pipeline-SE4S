@@ -21,37 +21,61 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import sys
 
 from animal_data import AnimalData
 
 
 def create_line_plot(data, cells, output_filename):
     """Generates line plot of neural activity over time for cells."""
-    plt.figure(figsize=(12, 7))
-    for cell in cells:
-        data_for_cell = data.get_data_for_cell(cell)
-        # Unpacking the tuple into three variables
-        # We throw away the second value, elapsed time
-        timestamps, _, values = zip(*data_for_cell)
-        plt.plot(timestamps, values, label=cell)
-    plt.xlabel('Timestamp')
-    plt.ylabel('Neural Activity Value')
-    plt.title('Neural Activity Over Time')
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-    plt.savefig(output_filename)
+    try:
+        plt.figure(figsize=(12, 7))
+        for cell in cells:
+            data_for_cell = data.get_data_for_cell(cell)
+            # Check if data_for_cell is empty
+            if not data_for_cell:
+                raise ValueError(f"Cell not found in data")
+            # Unpacking the tuple into three variables
+            # We throw away the second value, elapsed time
+            timestamps, _, values = zip(*data_for_cell)
+            plt.plot(timestamps, values, label=cell)
+
+        plt.xlabel('Timestamp')
+        plt.ylabel('Neural Activity Value')
+        plt.title('Neural Activity Over Time')
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.savefig(output_filename)
+
+    except ValueError as e:
+        print(e)
+        sys.exit(1)
+    except Exception as e:
+        print("Could not create line plot")
+        sys.exit(1)
 
 
 def create_correlation_matrix(data, cells, output_filename):
     """Generate heatmap of correlation matrix of neural activity."""
-    subset_data = {
-        cell: [value for _, _, value in data.get_data_for_cell(cell)]
-        for cell in cells
-    }
-    # Create dataframe to get easy correlation matrix functionality
-    df = pd.DataFrame(subset_data)
-    correlation_matrix = df.corr()
+    try:
+        subset_data = {
+            cell: [value for _, _, value in data.get_data_for_cell(cell)]
+            for cell in cells
+        }
+        # Check if subset_data is empty
+        if not subset_data:
+            raise ValueError(f"No data")
+        # Create dataframe to get easy correlation matrix functionality
+        df = pd.DataFrame(subset_data)
+        correlation_matrix = df.corr()
+
+    except ValueError as e:
+        print(e)
+        sys.exit(1)
+    except Exception as e:
+        print("Could not create correlation matrix")
+        sys.exit(1)
 
     plt.figure(figsize=(12, 7))
     sns.heatmap(correlation_matrix, annot=True,

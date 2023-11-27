@@ -6,3 +6,6 @@ create_visuals_experiment.ipynb
 *.png
 ssshtest
 .DS_Store
+
+# Include .png files in the /docs/ directory
+!/docs/*.png
