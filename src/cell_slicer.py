@@ -22,25 +22,30 @@ def cell_query(r_data, query, p_data=None, x_percent=None, alpha=0.05):
         sorted_p_matrix: series of sorted p values from correlation matrix
             if query is top this is returned as None
     """
-    # Convert to 1-D series and drop Null values
-    unique_corr_pairs = r_data.unstack().dropna()
-    # Sort corr pairs, need to keep values but sort based on absolute value
-    order = unique_corr_pairs.abs().sort_values(ascending=False)
-    ind = order.index
-    sorted_matrix = unique_corr_pairs[ind]
-    # python dicts are now sorted so this works to keep sorted order
-    sorted_cell_pairs = sorted_matrix.keys()
+    try:
+        # Convert to 1-D series and drop Null values
+        unique_corr_pairs = r_data.unstack().dropna()
+        # Sort corr pairs, need to keep values but sort based on absolute value
+        order = unique_corr_pairs.abs().sort_values(ascending=False)
+        ind = order.index
+        sorted_matrix = unique_corr_pairs[ind]
+        # python dicts are now sorted so this works to keep sorted order
+        sorted_cell_pairs = sorted_matrix.keys()
+    except TypeError:
+        print('r_data matrix not numbers')
+        return None
 
     # slice based on correlation signinficance:
     if query == 'sig':
         if p_data is None:
-            print('Error: if query is sig must input p_data')
+            print('Error if query is sig must input p_data')
             return None
         else:
             #  also sorting p values
             p_unique_corr_pairs = p_data.unstack().dropna()
             p_sorted_matrix = p_unique_corr_pairs.sort_values()
             p_sorted_cell_pairs = p_sorted_matrix.keys()
+
             try:
                 #  making slice of series based on alpha
                 sig_cell_pairs = p_sorted_matrix.loc[:, p_sorted_matrix.loc[:]
@@ -52,14 +57,14 @@ def cell_query(r_data, query, p_data=None, x_percent=None, alpha=0.05):
                     cells = p_sorted_cell_pairs[i]
                     cell_pairs.append(cells)
                 return cell_pairs, sorted_matrix, p_sorted_matrix
-            except:  # make specific with testing
-                print('some error happened with sig sorting')
+            except TypeError:
+                print('p_data matrix not numbers')
                 return None
 
     #  slice based on top x percent
     elif query == 'top':
         if x_percent is None:
-            print('Error: if query is top must input x_per')
+            print('Error if query is top must input x_per')
             return None
         else:
             #  turing int into float percentage
@@ -67,6 +72,8 @@ def cell_query(r_data, query, p_data=None, x_percent=None, alpha=0.05):
             cells_length = len(sorted_cell_pairs)
             #  have to round to a int number of pairs
             x_len = round(cells_length*per)
+            if x_len == 0:
+                print('percent is too low to round to 1 pair')
             cell_pairs = []
             for i in range(x_len):
                 cells = sorted_cell_pairs[i]
@@ -74,7 +81,7 @@ def cell_query(r_data, query, p_data=None, x_percent=None, alpha=0.05):
             return cell_pairs, sorted_matrix, None
 
     else:
-        print('Error: query must be sig or top')
+        print('Error query must be sig or top')
         return None
 
 
@@ -95,7 +102,7 @@ def get_slice_args():
                         help="file path/name of correlation matrix p values")
     parser.add_argument("-x", "--x_percent", type=int, required=False,
                         help="specify x percent value (int)")
-    parser.add_argument("-a", "--alpha", type=float, defalut=0.05,
+    parser.add_argument("-a", "--alpha", type=float, default=0.05,
                         help="significance cutoff, defalt=0.05")
     parser.add_argument('--out_pvals', type=str, required=False,
                         help='path/name for sorted p values output file')
@@ -107,9 +114,9 @@ def main():
     args = get_slice_args()
     #  load correlation data frames
     try:
-        r_data = pd.read_csv(args.file_name)
+        r_data = pd.read_csv(args.file_name, index_col=0)
         if args.file_pvals is not None:
-            p_data = pd.read_csv(args.file_pvals)
+            p_data = pd.read_csv(args.file_pvals, index_col=0)
         else:
             p_data = None
     except FileNotFoundError:
@@ -121,22 +128,22 @@ def main():
               + ' &/or ' + args.file_pvals)
         sys.exit(1)
 
-    cell_pairs, sorted_matrix, sorted_p_values = cell_query(r_data,
+    try:
+        cell_pairs, sorted_matrix, sorted_p_values = cell_query(r_data,
                                                             args.query,
                                                             p_data,
                                                             args.x_percent,
                                                             args.alpha)
 
-    if cell_pairs is None:
+    except TypeError:  # when returning None (1) vs 3 things it's TypeError
         print('Error above prevented cell_pairs file production.')
         sys.exit(1)
-    else:
-        #  save cell pairs as .txt file
-        f = open(args.out_file, 'w')
-        for e in cell_pairs:
-            f.write(str(e) + '\n')
-        f.close()
 
+    #  save cell pairs as .txt file
+    f = open(args.out_file, 'w')
+    for e in cell_pairs:
+        f.write(str(e) + '\n')
+    f.close()
     sorted_df = pd.DataFrame(sorted_matrix)
     sorted_df.to_csv(args.sorted_out_file)
     if sorted_p_values is not None:
