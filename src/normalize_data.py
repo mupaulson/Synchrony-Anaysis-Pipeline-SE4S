@@ -43,9 +43,12 @@ def main():
     args = parser.parse_args()
 
     #  pull un-normalized df from animal data structure
-    ani_data = ad.AnimalData(args.file_name)
+    ani_data = ad.from_csv(args.file_name)
     norm_df = normalize_df(ani_data)
-    norm_df.to_csv(args.out_file)
+    if norm_df is None:
+        print('error above prevented saving of normalized csv')
+        sys.exit(1)
+    norm_df.to_csv(args.out_file, index=False)
 
 
 if __name__ == '__main__':
