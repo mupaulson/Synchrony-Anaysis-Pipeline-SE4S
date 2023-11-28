@@ -23,6 +23,10 @@ def get_args():
                         help='pass 1 dataframe')
     parser.add_argument('--dataframe2',
                         help='pass second dataframe')
+    parser.add_argument('--savename',
+                        help='name for output files')
+    parser.add_argument('--save',
+                        help='save output dataframes as csv, default True')
     args = parser.parse_args()
     return args
 
@@ -32,7 +36,7 @@ def get_args():
 # returns 2 dataframes - corr coef and p-values
 # what to do when dataframes are different sizes  - if different sizes need to
 # cut off longest array - should only happen if timepoints not aligned
-def correlation_matrix(dataframe1, dataframe2):
+def correlation_matrix(dataframe1, dataframe2, savename, save=True):
 
     data1 = dataframe1
     data2 = dataframe2
@@ -80,5 +84,11 @@ def correlation_matrix(dataframe1, dataframe2):
 
             corr_p.loc[c1, c2] = p
             corr_r.loc[c1, c2] = r
+
+        if save is True:
+            corr_p.to_csv('../output/'+savename+'_p.csv')
+            corr_r.to_csv('../output/'+savename+'_r.csv')
+        else:
+            pass
 
     return corr_p, corr_r
