@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import os
 
+
 class TestSlicer(unittest.TestCase):
     # def setUp(self):
     #     file = '../test_data/random_r_matrix.csv'
@@ -22,11 +23,13 @@ class TestSlicer(unittest.TestCase):
     def test_cell_query_top(self):
         file = '../test_data/random_r_matrix.csv'
         rdf = pd.read_csv(file, index_col=0)
-        cell_pairs, sorted_matrix, n = cell_slicer.cell_query(rdf, 'top', x_percent=20)
+        cell_pairs, sorted_matrix, n = cell_slicer.cell_query(rdf,
+                                                              'top',
+                                                              x_percent=20)
         pair_len = len(cell_pairs)  # should be 2 for rounded 9*0.2
         value = sorted_matrix[0]
         max_values = rdf.max()  # change to axis=None for pd v2.0 to get scalar
-        
+
         self.assertEqual(pair_len, 2)
         self.assertEqual(value, max_values[0])
         self.assertIsNone(n)
@@ -36,13 +39,15 @@ class TestSlicer(unittest.TestCase):
         rdf = pd.read_csv(file, index_col=0)
         sig_file = '../test_data/fake_sig_p_matrix.csv'
         sdf = pd.read_csv(sig_file, index_col=0)
-        cell_pairs, sorted_matrix, p_matrix = cell_slicer.cell_query(rdf, 'sig', p_data=sdf)
+        cell_pairs, sorted_matrix, p_matrix = cell_slicer.cell_query(rdf,
+                                                                     'sig',
+                                                                     p_data=sdf)  # noqa
         pair_len = len(cell_pairs)
         value1 = sorted_matrix[0]
         value2 = p_matrix[0]
-        max_values = rdf.max()  
+        max_values = rdf.max()
         min_values = sdf.min()
-        
+
         self.assertEqual(pair_len, 6)
         self.assertEqual(value1, max_values[0])
         self.assertEqual(value2, min_values[1])
@@ -54,7 +59,7 @@ class TestSlicer(unittest.TestCase):
         test1 = cell_slicer.cell_query(rdf, 'percent')
         test2 = cell_slicer.cell_query(rdf, 'sig')
         test3 = cell_slicer.cell_query(rdf, 'top')
-        
+
         self.assertIsNone(test1)
         self.assertIsNone(test2)
         self.assertIsNone(test3)
@@ -66,7 +71,7 @@ class TestSlicer(unittest.TestCase):
         string_df = pd.read_csv(file2, index_col=0)
         test1 = cell_slicer.cell_query(string_df, 'top', x_percent=20)
         test2 = cell_slicer.cell_query(rdf, 'sig', p_data=string_df)
- 
+
         self.assertIsNone(test1)
         self.assertIsNone(test2)
 
@@ -76,18 +81,22 @@ class TestSlicer(unittest.TestCase):
         rdf = pd.read_csv(file, index_col=0)
         pfile = '../test_data/random_p_matrix.csv'
         pdf = pd.read_csv(pfile, index_col=0)
-        cell_pairs, sorted_matrix, p_matrix = cell_slicer.cell_query(rdf, 'sig', p_data=pdf)
+        cell_pairs, sorted_matrix, p_matrix = cell_slicer.cell_query(rdf,
+                                                                     'sig',
+                                                                     p_data=pdf)  # noqa
         pair_len = len(cell_pairs)
         value = p_matrix[0]
         min_values = pdf.min()
-        
+
         self.assertEqual(pair_len, 0)
         self.assertEqual(value, min_values[0])
 
     def test_cell_query_top_tiny_percent(self):
         file = '../test_data/random_r_matrix.csv'
         rdf = pd.read_csv(file, index_col=0)
-        cell_pairs, sorted_matrix, n = cell_slicer.cell_query(rdf, 'top', x_percent=1)
+        cell_pairs, sorted_matrix, n = cell_slicer.cell_query(rdf,
+                                                              'top',
+                                                              x_percent=1)
         pair_len = len(cell_pairs)  # 1% rounded is 0
         value = sorted_matrix[0]
         max_values = rdf.max()  # change to axis=None for pd v2.0 to get scalar
@@ -96,6 +105,4 @@ class TestSlicer(unittest.TestCase):
         self.assertEqual(value, max_values[0])
         self.assertIsNone(n)
 
-#  do I need unit tests for get_args function?d
-        
-        
+#  do I need unit tests for get_args function?

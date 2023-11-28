@@ -130,10 +130,10 @@ def main():
 
     try:
         cell_pairs, sorted_matrix, sorted_p_values = cell_query(r_data,
-                                                            args.query,
-                                                            p_data,
-                                                            args.x_percent,
-                                                            args.alpha)
+                                                                args.query,
+                                                                p_data,
+                                                                args.x_percent,
+                                                                args.alpha)
 
     except TypeError:  # when returning None (1) vs 3 things it's TypeError
         print('Error above prevented cell_pairs file production.')
