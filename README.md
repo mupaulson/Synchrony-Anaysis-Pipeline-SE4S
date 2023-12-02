@@ -42,6 +42,10 @@ Team Members: Maya Paulson, Emma Keppler, Deanna Gelosi, and Philipp Wunsch
 - create data saving structure
 - snakefile for workflow
 
+### Correlations Between Animals
+
+This functionality is designed to take dataframes of cell data for two animals and correlate every cell in the two passed dataframes. It saves two dataframes to the output folder, one with p-values for each comparison and one with R values. It removes time periods with missing data and will shorten datasets with a mismatch in length. Run example code for processing the data in show_correlations.py.
+
 ### Visualization of Synchrony Analysis Pipeline Part
 
 This tool is designed to visualize neural activity data, offering insightful and detailed plots that aid in understanding complex neural patterns. It supports two primary types of visualizations:
