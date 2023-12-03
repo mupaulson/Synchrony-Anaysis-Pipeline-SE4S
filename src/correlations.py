@@ -105,12 +105,8 @@ def main():
     
     corr_p, corr_r = correlation_matrix(df1,df2)
     
-    if corr_p or corr_r is None:
-        print('save error')
-        sys.exit(1)
-    else:
-        corr_p.to_csv('../output/'+savename+'_p.csv')
-        corr_r.to_csv('../output/'+savename+'_r.csv')
+    corr_p.to_csv('../output/'+savename+'_p.csv')
+    corr_r.to_csv('../output/'+savename+'_r.csv')
     
         
 if __name__ == '__main__':
