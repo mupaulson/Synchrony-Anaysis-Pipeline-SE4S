@@ -19,4 +19,4 @@ df1 = utils.animal_data_to_df(animal_data1, col1)
 df2 = utils.animal_data_to_df(animal_data2, col2)
 
 # Output 2 dataframes for p and R values
-p_data, r_data = corr.correlation_matrix(df1, df2,  save=True, savename='test')
+p_data, r_data = corr.correlation_matrix(df1, df2)

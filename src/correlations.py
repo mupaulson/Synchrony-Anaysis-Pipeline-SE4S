@@ -5,39 +5,22 @@ from animal_data import AnimalData as ad
 import sys
 
 
-# define main function
-def main():
-    print(__name__)
-
-
-if __name__ == '__main__':
-    main()
-
-
-# define parser for help with the get_column function
-def get_args():
-    parser = argparse.ArgumentParser(
-                                description='correlates two dataframes',
-                                prog='correlation_matrix')
-    parser.add_argument('--dataframe1',
-                        help='pass 1 dataframe')
-    parser.add_argument('--dataframe2',
-                        help='pass second dataframe')
-    parser.add_argument('--savename',
-                        help='name for output files')
-    parser.add_argument('--save',
-                        help='save output dataframes as csv, default True')
-    args = parser.parse_args()
-    return args
-
-
 # correlations - requires 2 dataframes and uses scipy correlate
 # to correlate all cell values in the dataframes
 # returns 2 dataframes - corr coef and p-values
 # what to do when dataframes are different sizes  - if different sizes need to
 # cut off longest array - should only happen if timepoints not aligned
-def correlation_matrix(dataframe1, dataframe2, savename, save=True):
-
+def correlation_matrix(dataframe1, dataframe2):
+    """
+    Takes two dataframes of cell data and correlates all cells 
+    between the dataframes. Outputs two dataframes of p-values 
+    and R values for every correlation. Different size dataframes 
+    are cut to be the same length, and missing data is removed.
+        Args: dataframe1, dataframe2 are the two dataframes to 
+        correlate. The cell names of dataframe1 will be the 
+        index of the output, and the cells in dataframe2 will be 
+        the column names.
+        """
     data1 = dataframe1
     data2 = dataframe2
 
@@ -85,10 +68,50 @@ def correlation_matrix(dataframe1, dataframe2, savename, save=True):
             corr_p.loc[c1, c2] = p
             corr_r.loc[c1, c2] = r
 
-    if save is True:
-        corr_p.to_csv('../output/'+savename+'_p.csv')
-        corr_r.to_csv('../output/'+savename+'_r.csv')
-    else:
-        pass
+#    if save is True:
+#        corr_p.to_csv('../output/'+savename+'_p.csv')
+#        corr_r.to_csv('../output/'+savename+'_r.csv')
+#    else:
+#        pass
 
     return corr_p, corr_r
+
+
+# define parser for help with the get_column function
+def get_args():
+    parser = argparse.ArgumentParser(
+                                description='correlates two dataframes',
+                                prog='correlation_matrix')
+    parser.add_argument('--dataframe1',
+                        help='pass 1 dataframe')
+    parser.add_argument('--dataframe2',
+                        help='pass second dataframe')
+    parser.add_argument('--savename',
+                        help='name for output files')
+    parser.add_argument('--save',
+                        help='save output dataframes as csv, default True')
+    args = parser.parse_args()
+    return args
+
+
+# define main function
+def main():
+    args = get_args()
+    
+    df1 = args.dataframe1
+    df2 = args.dataframe2
+    savename = args.savename
+    #save = args.save
+    
+    corr_p, corr_r = correlation_matrix(df1,df2)
+    
+    if corr_p or corr_r is None:
+        print('save error')
+        sys.exit(1)
+    else:
+        corr_p.to_csv('../output/'+savename+'_p.csv')
+        corr_r.to_csv('../output/'+savename+'_r.csv')
+    
+        
+if __name__ == '__main__':
+    main()
