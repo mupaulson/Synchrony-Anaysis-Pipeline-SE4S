@@ -85,10 +85,10 @@ def correlation_matrix(dataframe1, dataframe2, savename, save=True):
             corr_p.loc[c1, c2] = p
             corr_r.loc[c1, c2] = r
 
-        if save is True:
-            corr_p.to_csv('../output/'+savename+'_p.csv')
-            corr_r.to_csv('../output/'+savename+'_r.csv')
-        else:
-            pass
+    if save is True:
+        corr_p.to_csv('../output/'+savename+'_p.csv')
+        corr_r.to_csv('../output/'+savename+'_r.csv')
+    else:
+        pass
 
     return corr_p, corr_r
