@@ -2,97 +2,85 @@
 
 SE4S 2023
 
-Team Members: Maya Paulson, Emma Keppler, Deanna Gelosi, and Philipp Wunsch 
+Team Members: Maya Paulson, Emma Keppler, Deanna Gelosi, and Philipp Wunsch
 
-## v1.0
+## Overview
 
-### Data Loader
+In this pipeline, cell data across two animals is compared for synchronization. The sample data used is from voles, which are known to form pair bonds.
 
-**Implemented**
+### Research Question
 
-- AnimalData class that reads CSV files and outputs a list of Tuples for each cell
-- Function `get_data_for_cell()` to return specified cell data
-- Function `get_data_at_time()` to return all cell data at specified time
-- Function `remap_time_values()` starts time at 0.00 seconds and rounds all time values to nearest 1/100 second
-- Function `save_to_csv()` saves the AnimalData class object to a new CSV file
-- Function `from_csv()` loads initial CSV file into an AnimalData class object
-- Unit and functional testing for loading CSV
-- Setup continuous integration yaml file for unit and functional tests
+Will voles have increased synchronization when interacting with their partner than interacting with a novel vole?
 
-**ToDo**
+### Background
 
-- Additional unit and functional testing for `animal_data.py` and `load_data.py`
-- NAN if no cell value (numpy)
-- Run pylint style tests
-- Enable style tests in continuous integration
+Prairie voles are a model organism used to study the neural mechanisms of social bonds. Voles form pair bonds, preferring to spend time with their partner and are aggressive towards unfamiliar voles Synchronization occurs when neurons in two different animals have rhythmically aligned activity. In humans, synchronized activity is related to prosocial behaviors and is disrupted in several neurological disorders like ASD.
 
-### Normalization and Cell Slicing functions
+### Features
 
-**Implemented**
+The workflow for this pipeline includes:
 
-- created normalize_data.py: takes in animal data and saves a normalized df as a csv
-- created cell_slicer.py: takes in correlation matrix df and saves cell pair txt file and df of sorted correlation matrix values
-- created df_utils.py: put the function animal_data_to_df from correlation branch here so I can use it too
-- created test.ipynb to test all functions in sequence without using snakmake just yet
+- A data loader (`load_data.py`) to input animal cell data and time.
+- Data normalization (`normalize_data.py`) to compare cell data between animals.
+- Correlation (`correlations.py`) between two animals' normalized data, saving two data frames of p_values and R_values, respectively. Highly correlated cell pairs are then identified.
+- Visualizations of cell activity over time and a correlation matrix of neural activity are rendered (`create_plots.py`).
 
-**ToDo**
+## How To Run
 
-- create unit and functional tests
-- best pratice formatting
-- create data saving structure
-- snakefile for workflow
+1. In the terminal, clone this repo.
 
-### Visualization of Synchrony Analysis Pipeline Part
+    ```
+    https://github.com/mupaulson/Synchrony-Anaysis-Pipeline-SE4S.git
+    ```
 
-This tool is designed to visualize neural activity data, offering insightful and detailed plots that aid in understanding complex neural patterns. It supports two primary types of visualizations:
+2. Navigate to the repo directory.
 
-1. Line Plot: Shows neural activity over time for selected cells.
-2. Heatmap: Visualizes the correlation matrix of neural activity among different cells.
+    ```
+    cd Synchrony-Analysis-Pipeline-SWE4S
+    ```
 
-***Example Usage:***
+3. Add data to the data directory, or use the provided test data.
+4. To create plots, navigate to the src directory.
 
-```bash
-python create_plots.py -f [data_file.csv] -c [cell_names] -o [output_filename.png] -p [plot_type]
-```
+    ```
+    cd src/
+    ```
 
-    -f, --file: Path to the data CSV file (required).
-    -c, --cells: List of cell names for the plot (required).
-    -o, --output: Filename for the output (default "output.png").
-    -p, --plot_type: Type of plot (line or correlation, default line).
+5. Generate plots using the following command line structure.
+    ```bash
+    python create_plots.py -f [data_file.csv] -c [cell_names] -o [output_filename.png] -p [plot_type]
+    ```
 
-***1. Line Plot***
+    ```
+        -f, --file: Path to the data CSV file (required).
+        -c, --cells: List of cell names for the plot (required).
+        -o, --output: Filename for the output (default "output.png").
+        -p, --plot_type: Type of plot (line or correlation, default line).
+    ```
 
-```bash
-python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 C002 -o line_plot.png -p line
-```
+6. For a line plot, run the following line.
+
+    ```bash
+    python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 C002 -o line_plot.png -p line
+    ```
 
 ![example_line_plot](docs/example_line_plot.png)
 
 
-***2. Correlation Matrix Heatmap Plot***
+7. For a correlation matrix heatmap plot, run the following line.
 
-```bash
-python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 C003 -o correlation_matrix.png -p correlation
-```
+*Important Release Note: The correlation matrix heatmap plot only supports ***two*** cells right now due to limitation in lib functions. We will add support for more cells in the future.*
+
+    ```bash
+    python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 -o correlation_matrix.png -p correlation
+    ```
 ![example_correlation_matrix](docs/example_correlation_matrix.png)
-
-**Implemented**
-
-- create_plots.py: Line plot and correlation plot
-- ArgumentParser: Command line interface
-- Outputs png files
-- Documentation and styleguide follow
-
-**ToDo**
-
-- Create unit tests for each function
-
 
 ## Testing
 
 ### Unit Tests
 
-1. Move into the unit_test directory.
+1. Navigate into the unit_test directory.
 
     ```bash
     cd tests/unit_tests
@@ -106,7 +94,7 @@ python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 C003 -o 
 
 ### Functional Tests
 
-1. Move into the functional_test directory.
+1. Navigate into the functional_test directory.
 
     ```bash
     cd tests/functional_tests
@@ -117,4 +105,18 @@ python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 C003 -o 
     ```bash
     chmod +x test_load_data.sh
     ./test_load_data.sh 
+    ```
+
+### Style Tests
+
+1. Navigate into the top level directory.
+2. Install `pycodestyle`.
+
+    ```
+        - run: pip install pycodestyle
+    ```
+
+3. Run `pycodestyle` on all Python files in the repo.
+    ```
+    pycodestyle $(git ls-files "*.py")
     ```

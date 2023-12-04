@@ -24,6 +24,7 @@ import seaborn as sns
 import sys
 
 from animal_data import AnimalData
+from correlations import correlation_matrix
 
 
 def create_line_plot(data, cells, output_filename):
@@ -59,18 +60,34 @@ def create_line_plot(data, cells, output_filename):
 def create_correlation_matrix(data, cells, output_filename):
     """Generate heatmap of correlation matrix of neural activity."""
     try:
+        # Current Lib function only supports 2 cells, so we check for that
+        if len(cells) != 2:
+            raise ValueError(f"Only supports 2 cells")
+
+        data_for_cells = [data.get_data_for_cell(cell) for cell in cells]
+        # See if any of the cells are not in the data
+        if not all(data_for_cells):
+            raise ValueError(f"Cell not found in data")
+
+        # Creating dict with cell name as key and cell values as values
         subset_data = {
             cell: [value for _, _, value in data.get_data_for_cell(cell)]
             for cell in cells
         }
-        # Check if subset_data is empty
+        # Check if data was gathered
         if not subset_data:
             raise ValueError(f"No data")
-        # Create dataframe to get easy correlation matrix functionality
+
         df = pd.DataFrame(subset_data)
-        correlation_matrix = df.corr()
+
+        # We only need the R values, not the p values
+        _, corr_matrix = correlation_matrix(df, df)
+
+        # Ensure its numeric
+        corr_matrix = corr_matrix.apply(pd.to_numeric, errors="coerce")
 
     except ValueError as e:
+        sys.stderr.write(e)
         print(e)
         sys.exit(1)
     except Exception as e:
@@ -78,7 +95,7 @@ def create_correlation_matrix(data, cells, output_filename):
         sys.exit(1)
 
     plt.figure(figsize=(12, 7))
-    sns.heatmap(correlation_matrix, annot=True,
+    sns.heatmap(corr_matrix, annot=True,
                 cmap='coolwarm', vmin=-1, vmax=1)
     plt.title('Correlation Matrix of Neural Activity')
     plt.tight_layout()

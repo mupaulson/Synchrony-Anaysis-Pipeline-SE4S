@@ -26,6 +26,7 @@ jobs:
           cd tests/unit_tests
           python3 -m unittest test_animal_data.py
           python3 -m unittest test_create_plots.py
+          python3 -m unittest test_correlations.py
 
   run_func_tests:
     runs-on: ubuntu-latest
@@ -39,10 +40,13 @@ jobs:
 
       - name: Run functional tests
         run: |
+          pip install -r requirements.txt
           cd tests/functional_tests
           chmod +x test_create_plots.sh
           ./test_load_data.sh
           ./test_create_plots.sh
+          chmod +x test_show_correlations.sh
+          ./test_show_correlations.sh
 
 
   # Run Code Style Check
@@ -56,25 +60,3 @@ jobs:
     - run: pip install pycodestyle
     # run pycodestyle on all python files in the repo
     - run: pycodestyle $(git ls-files "*.py")
-
-
-  # run_style_tests:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-      
-  #     - name: Set up Python
-  #       uses: actions/setup-python@v2
-  #       with:
-  #         python-version: '3.x'
-  
-  #     - name: Install dependencies
-  #       run: |
-  #         python -m pip install --upgrade pip
-  #         pip install -r requirements.txt
-  
-  #     - name: Install pylint
-  #       run: pip install pylint
-  
-  #     - name: Run pylint
-  #       run: pylint src/
