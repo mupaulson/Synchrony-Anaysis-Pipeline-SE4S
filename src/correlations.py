@@ -5,20 +5,16 @@ from animal_data import AnimalData as ad
 import sys
 
 
-# correlations - requires 2 dataframes and uses scipy correlate
-# to correlate all cell values in the dataframes
-# returns 2 dataframes - corr coef and p-values
-# what to do when dataframes are different sizes  - if different sizes need to
-# cut off longest array - should only happen if timepoints not aligned
+# Generate correlation matrix
 def correlation_matrix(dataframe1, dataframe2):
     """
-    Takes two dataframes of cell data and correlates all cells 
-    between the dataframes. Outputs two dataframes of p-values 
-    and R values for every correlation. Different size dataframes 
+    Takes two dataframes of cell data and correlates all cells
+    between the dataframes. Outputs two dataframes of p-values
+    and R values for every correlation. Different size dataframes
     are cut to be the same length, and missing data is removed.
-        Args: dataframe1, dataframe2 are the two dataframes to 
-        correlate. The cell names of dataframe1 will be the 
-        index of the output, and the cells in dataframe2 will be 
+        Args: dataframe1, dataframe2 are the two dataframes to
+        correlate. The cell names of dataframe1 will be the
+        index of the output, and the cells in dataframe2 will be
         the column names.
         """
     data1 = dataframe1
@@ -68,12 +64,6 @@ def correlation_matrix(dataframe1, dataframe2):
             corr_p.loc[c1, c2] = p
             corr_r.loc[c1, c2] = r
 
-#    if save is True:
-#        corr_p.to_csv('../output/'+savename+'_p.csv')
-#        corr_r.to_csv('../output/'+savename+'_r.csv')
-#    else:
-#        pass
-
     return corr_p, corr_r
 
 
@@ -86,10 +76,8 @@ def get_args():
                         help='pass 1 dataframe')
     parser.add_argument('--dataframe2',
                         help='pass second dataframe')
-    parser.add_argument('--savename',
-                        help='name for output files')
-    parser.add_argument('--save',
-                        help='save output dataframes as csv, default True')
+    parser.add_argument('--out_file',
+                        help='name list for output files [r_vals, p_vals]')
     args = parser.parse_args()
     return args
 
@@ -97,17 +85,16 @@ def get_args():
 # define main function
 def main():
     args = get_args()
-    
+
     df1 = args.dataframe1
     df2 = args.dataframe2
-    savename = args.savename
-    #save = args.save
-    
-    corr_p, corr_r = correlation_matrix(df1,df2)
-    
-    corr_p.to_csv('../output/'+savename+'_p.csv')
-    corr_r.to_csv('../output/'+savename+'_r.csv')
-    
-        
+    outfile = args.out_file
+
+    corr_p, corr_r = correlation_matrix(df1, df2)
+
+    corr_r.to_csv(outfile[0])
+    corr_p.to_csv(outfile[1])
+
+
 if __name__ == '__main__':
     main()
