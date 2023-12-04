@@ -75,8 +75,10 @@ python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 C002 -o 
 
 ***2. Correlation Matrix Heatmap Plot***
 
+*Important Release Note: The correlation matrix heatmap plot only supports ***two*** cells right now due to limitation in lib functions. We will add support for more cells in the future.*
+
 ```bash
-python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 C003 -o correlation_matrix.png -p correlation
+python src/create_plots.py -f data/4659_aligned_traces.csv -c C000 C001 -o correlation_matrix.png -p correlation
 ```
 ![example_correlation_matrix](docs/example_correlation_matrix.png)
 
