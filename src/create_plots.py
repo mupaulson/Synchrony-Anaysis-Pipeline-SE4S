@@ -61,7 +61,7 @@ def create_correlation_matrix(data, cells, output_filename):
     """Generate heatmap of correlation matrix of neural activity."""
     try:
         # Current Lib function only supports 2 cells, so we check for that
-        if len(cells) > 2:
+        if len(cells) != 2:
             raise ValueError(f"Only supports 2 cells")
 
         data_for_cells = [data.get_data_for_cell(cell) for cell in cells]
@@ -69,11 +69,12 @@ def create_correlation_matrix(data, cells, output_filename):
         if not all(data_for_cells):
             raise ValueError(f"Cell not found in data")
 
+        # Creating dict with cell name as key and cell values as values
         subset_data = {
             cell: [value for _, _, value in data.get_data_for_cell(cell)]
             for cell in cells
         }
-        # Check if subset_data is empty
+        # Check if data was gathered
         if not subset_data:
             raise ValueError(f"No data")
 
@@ -82,9 +83,8 @@ def create_correlation_matrix(data, cells, output_filename):
         # We only need the R values, not the p values
         _, corr_matrix = correlation_matrix(df, df)
 
-        # Make numeric and reset the index for plotting
+        # Ensure its numeric
         corr_matrix = corr_matrix.apply(pd.to_numeric, errors="coerce")
-        corr_matrix.reset_index(drop=True, inplace=True)
 
     except ValueError as e:
         sys.stderr.write(e)
