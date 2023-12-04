@@ -26,6 +26,7 @@ jobs:
           cd tests/unit_tests
           python3 -m unittest test_animal_data.py
           python3 -m unittest test_create_plots.py
+          python3 -m unittest test_correlations.py
 
   run_func_tests:
     runs-on: ubuntu-latest
@@ -44,6 +45,7 @@ jobs:
           chmod +x test_create_plots.sh
           ./test_load_data.sh
           ./test_create_plots.sh
+          ./test_show_correlations.sh
 
 
   # Run Code Style Check
