@@ -81,7 +81,7 @@ def get_args():
                         help='name list for output file r values')
     parser.add_argument('--out_file_p',
                         help='name list for output file p values')
-  
+
     args = parser.parse_args()
     return args
 
@@ -103,7 +103,6 @@ def main():
 
     corr_r.to_csv(r_file_out)
     corr_p.to_csv(p_file_out)
-
 
 
 if __name__ == '__main__':
