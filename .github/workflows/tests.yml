@@ -45,6 +45,7 @@ jobs:
           chmod +x test_create_plots.sh
           ./test_load_data.sh
           ./test_create_plots.sh
+          chmod +x test_show_correlations.sh
           ./test_show_correlations.sh
 
 
