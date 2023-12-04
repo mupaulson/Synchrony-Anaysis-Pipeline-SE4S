@@ -24,6 +24,12 @@ class TestCreatePlots(unittest.TestCase):
         # Check existence on disk
         self.assertTrue(os.path.exists(self.output_file_line))
 
+    # Test for non existent cell
+    def test_create_line_plot_non_existent_cell(self):
+        with self.assertRaises(SystemExit):
+            create_line_plot(self.data, ["Definetly_No_Cell", "C999"],
+                             self.output_file_line)
+
     # Check if correlation matrix can be created
     def test_create_correlation_matrix(self):
         create_correlation_matrix(self.data, self.cells, self.output_file_corr)

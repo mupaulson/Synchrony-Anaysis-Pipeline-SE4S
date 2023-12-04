@@ -17,13 +17,23 @@ assert_equal "line_plot_test.png" $(ls line_plot_test.png)
 # Test successful correlation plot creation
 run test_correlation_matrix python ../../src/create_plots.py \
     -f ../../data/4659_aligned_traces.csv \
-    -c C000 C001 C003 \
+    -c C000 C001 \
     -o correlation_matrix_test.png \
     -p correlation
 # No error codes, no error output and the file exists locally
 assert_exit_code 0
 assert_no_stderr
 assert_equal "correlation_matrix_test.png" $(ls correlation_matrix_test.png)
+
+# Test too manny arguments succssful correlation plot creation
+run test_correlation_matrix_args python ../../src/create_plots.py \
+    -f ../../data/4659_aligned_traces.csv \
+    -c C000 C001 C002 C003\
+    -o correlation_matrix_test.png \
+    -p correlation
+# Error code, too manny args in error message
+assert_exit_code 1
+assert_in_stderr "Only supports 2 cells"
 
 # Test with a non existent file
 run test_missing_file python ../../src/create_plots.py \

@@ -64,6 +64,11 @@ def create_correlation_matrix(data, cells, output_filename):
         if len(cells) > 2:
             raise ValueError(f"Only supports 2 cells")
 
+        data_for_cells = [data.get_data_for_cell(cell) for cell in cells]
+        # See if any of the cells are not in the data
+        if not all(data_for_cells):
+            raise ValueError(f"Cell not found in data")
+
         subset_data = {
             cell: [value for _, _, value in data.get_data_for_cell(cell)]
             for cell in cells
@@ -82,6 +87,7 @@ def create_correlation_matrix(data, cells, output_filename):
         corr_matrix.reset_index(drop=True, inplace=True)
 
     except ValueError as e:
+        sys.stderr.write(e)
         print(e)
         sys.exit(1)
     except Exception as e:
