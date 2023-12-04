@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import scipy.stats as sps
+import argparse
 from animal_data import AnimalData as ad
 import sys
 
@@ -76,8 +77,11 @@ def get_args():
                         help='pass 1 dataframe')
     parser.add_argument('--dataframe2',
                         help='pass second dataframe')
-    parser.add_argument('--out_file',
-                        help='name list for output files [r_vals, p_vals]')
+    parser.add_argument('--out_file_r',
+                        help='name list for output file r values')
+    parser.add_argument('--out_file_p',
+                        help='name list for output file p values')
+  
     args = parser.parse_args()
     return args
 
@@ -86,14 +90,20 @@ def get_args():
 def main():
     args = get_args()
 
-    df1 = args.dataframe1
-    df2 = args.dataframe2
-    outfile = args.out_file
+    df1_file = args.dataframe1
+    df2_file = args.dataframe2
+
+    df1 = pd.read_csv(df1_file)
+    df2 = pd.read_csv(df2_file)
 
     corr_p, corr_r = correlation_matrix(df1, df2)
 
-    corr_r.to_csv(outfile[0])
-    corr_p.to_csv(outfile[1])
+    r_file_out = args.out_file_r
+    p_file_out = args.out_file_p
+
+    corr_r.to_csv(r_file_out)
+    corr_p.to_csv(p_file_out)
+
 
 
 if __name__ == '__main__':

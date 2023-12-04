@@ -1,0 +1,127 @@
+# steps:
+# get data file names
+# load data files into data loader
+# normalize data
+# correlate data
+# get cell pairs 
+# graph cell traces
+
+def parse_data_files(file_name):
+    """
+    takes a schedule csv that has animal number, data file, and session number columns
+    returns list of data files to run into data loader
+    """
+    data_files = []
+    animal_nums = []
+    i = 0
+    with open(file_name) as f:
+        for l in f:
+            row = l.rstrip().split(',')
+            if i == 0:
+                i+=1
+                continue
+            data_files.append(row[1])
+            animal_nums.append(row[0])
+    return data_files, animal_nums
+
+def get_output_file_names(animal_nums, output_type):
+    """
+    output types: 
+        'normalized'
+        'correlation'
+        'slicing_top'
+        'slicing_sig'
+        'plotting'
+    """
+    ani1 = animal_nums[0]
+    ani2 = animal_nums[1]
+    names_str = str(ani1+'_'+ani2)
+    if output_type == 'normalized':
+        a1str = ani1 + '_normalized_data_s.csv'
+        a2str = ani2 + '_normalized_data_s.csv'
+        return [a1str, a2str]
+    elif output_type == 'correlation':
+        str1 = names_str + '_correlation_matrix_r_values.csv'
+        str2 = names_str + '_correlation_matrix_p_values.csv'
+        return [str1, str2]
+    elif output_type == 'slicing_sig':
+        str1 = names_str + '_significant_cell_pairs_TEST.txt'
+        str2 = names_str + '_sorted_correlations_TEST.csv'
+        str3 = names_str + '_sorted_p_values_TEST.csv'
+        return [str1, str2, str3]
+    elif output_type == 'slicing_top':
+        str1 = names_str + '_top_1_percent_cell_pairs.txt'
+        str2 = names_str + '_sorted_correlations2.csv'
+        return [str1, str2]
+    elif output_type == 'plotting':
+        str1 = names_str + '_cell_pairs_line_plot.png'
+        str2 = names_str + '_correlation_matrix.png'
+        return [str1, str2]
+    else:
+        print('not a valid output_type arg')
+        return None    
+
+def get_rule(file_name, rule):
+    """ rules: all, norm_in, norm_out, correlation, sig, top"""
+    data_files, animal_nums = parse_data_files(file_name)
+    if rule == 'all':
+        out_files = get_output_file_names(animal_nums, 'plotting')
+        return out_files
+    elif rule == 'norm_in':
+        return data_files
+    elif rule == 'norm_out':
+        out_files=get_output_file_names(animal_nums, 'normalized')
+        return out_files
+    elif rule == 'correlation':
+        out_files = get_output_file_names(animal_nums, 'correlation')
+        return out_files
+    elif rule == 'sig':
+        out_files=get_output_file_names(animal_nums, 'slicing_sig')
+        return out_files
+    elif rule == 'top':
+        out_files=get_output_file_names(animal_nums, 'slicing_top')
+        return out_files
+    else:
+        print('not valid rule arg')
+        return None
+
+
+rule all:
+    input:
+        # expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'all'))
+        expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'sig'))
+
+rule get_normalized_data:
+    input:
+        expand('{data_file}', data_file=get_rule('../data/schedule_test.csv', 'norm_in'))
+    output:
+        expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'norm_out'))
+    shell:
+        """python normalize_data.py --file_name {input[0]}  --out_file {output[0]}
+        python normalize_data.py --file_name {input[1]}  --out_file {output[1]}"""
+
+rule correlate_animals:
+    input:
+        expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'norm_out'))
+    output:
+        expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'correlation'))
+    shell:
+        """python correlations.py --dataframe1 {input[0]}  --dataframe2 {input[1]} --out_file_r {output[0]} --out_file_p {output[1]} """
+
+rule get_signifcant_cells:
+    input:
+        expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'correlation'))
+    output:
+        expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'sig'))
+    shell:
+        """python cell_slicer.py  --file_name {input[0]} --out_file {output[0]} --sorted_out_file {output[1]} --query sig --file_pvals {input[1]} --out_pvals {output[2]}"""
+
+rule get_top_correlated_cells:
+    input:
+        expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'correlation'))
+    output:
+        expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'top'))
+    shell:
+        """python cell_slicer.py  --file_name {input[0]} --out_file {output[0]} --sorted_out_file {output[1]} --query top --x_percent 1"""
+
+# TODO: add graphing to snakefile
