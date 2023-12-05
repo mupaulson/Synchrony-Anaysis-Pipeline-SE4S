@@ -3,8 +3,8 @@
 # load data files into data loader
 # normalize data
 # correlate data
-# get cell pairs 
-# graph cell traces
+# get cell pairs
+# graph cell traces NOT DONE
 
 def parse_data_files(file_name):
     """
@@ -88,8 +88,8 @@ def get_rule(file_name, rule):
 
 rule all:
     input:
-        # expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'all'))
         expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'sig'))
+        # expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'all'))  # for eventual plotting functionality
 
 rule get_normalized_data:
     input:
