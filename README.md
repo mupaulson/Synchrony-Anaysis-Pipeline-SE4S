@@ -6,7 +6,7 @@ Team Members: Maya Paulson, Emma Keppler, Deanna Gelosi, and Philipp Wunsch
 
 ## Overview
 
-In this pipeline, cell data across two animals is compared for synchronization. The sample data used is from voles, which are known to form pair bonds.
+In this pipeline, cell data across two animals is compared for synchronization. The sample data used is from prairie voles, which are known to form pair bonds.
 
 ### Research Question
 
@@ -23,7 +23,10 @@ The workflow for this pipeline includes:
 - A data loader (`load_data.py`) to input animal cell data and time.
 - Data normalization (`normalize_data.py`) to compare cell data between animals.
 - Correlation (`correlations.py`) between two animals' normalized data, saving two data frames of p_values and R_values, respectively. Highly correlated cell pairs are then identified.
+- A query of cell pair correlations (`cell_slicer.py`) that identifies cell pairs that have significant correlations or the highest levels of correlation.
 - Visualizations of cell activity over time and a correlation matrix of neural activity are rendered (`create_plots.py`).
+
+Documentation of main analysis and graphing functions with example output are found in doc/Tutorial.ipynb jupyter notebook. Example plot pngs can also be found in doc directory.
 
 ## How To Run
 
@@ -40,6 +43,8 @@ The workflow for this pipeline includes:
     ```
 
 3. Add data to the data directory, or use the provided test data.
+
+#### Single Animal Visualization:
 4. To create plots, navigate to the src directory.
 
     ```
@@ -76,6 +81,33 @@ The workflow for this pipeline includes:
     ```
 ![example_correlation_matrix](docs/example_correlation_matrix.png)
 
+#### Snakemake functionalization
+8. To run the sample data, run snakemake as is:
+
+    ```
+    cd src/
+    snakemake -c 1
+    ```
+    You can specify how many cores snakemake runs (more is faster) by changing the integer after -c
+    snakemake at current functionality will run through all analysis steps but will not run visualizations.
+
+To add your own data to the snakemake pipeline:
+
+9. add files to the data directory
+
+10. edit the file data/schedule_test.csv to have the correct file names in the File_Name column (relative path must be correct too) and correct animal numbers in the Animal_Num column
+
+11. In the snakefile, you can specify which endpoint you would like. It is currently set to run the normalization, correlation and slice for significant cells. To change the endpoint, edit the rule all (line 91):
+
+    ```
+    rule all:
+        input:
+ 91:        expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'sig'))
+     ```
+     edit the final string (currently 'sig') to any of these options: 'norm_out' (will end after normalizing data), 'correlation' (will end after making correlation matrix), 'sig' (will end with signifcant cell pairs), or 'top' (will end with top 1% of cells correlated).
+
+12. Repeat step 8 to run snakemake with these changes
+
 ## Testing
 
 ### Unit Tests
@@ -110,6 +142,7 @@ The workflow for this pipeline includes:
 ### Style Tests
 
 1. Navigate into the top level directory.
+
 2. Install `pycodestyle`.
 
     ```
