@@ -7,7 +7,7 @@ import sys
 
 
 # Generate correlation matrix
-def correlation_matrix(dataframe1, dataframe2):
+def correlation_matrix(dataframe1, dataframe2, parse_nan=False):
     """
     Takes two dataframes of cell data and correlates all cells
     between the dataframes. Outputs two dataframes of p-values
@@ -50,11 +50,14 @@ def correlation_matrix(dataframe1, dataframe2):
             a2 = data2[c2].astype(float)
 
             # drop times where 1 value is nan/missing from either array
-            a1 = a1[~np.isnan(a2)]
-            a2 = a2[~np.isnan(a1)]
+            if parse_nan:
+                a1 = a1[~np.isnan(a2)]
+                a2 = a2[~np.isnan(a1)]
 
-            a1 = a1[~np.isnan(a1)]
-            a2 = a2[~np.isnan(a2)]
+                a1 = a1[~np.isnan(a1)]
+                a2 = a2[~np.isnan(a2)]
+            else:
+                pass
 
             try:
                 (r, p) = sps.pearsonr(a1, a2)
