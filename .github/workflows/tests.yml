@@ -27,6 +27,8 @@ jobs:
           python3 -m unittest test_animal_data.py
           python3 -m unittest test_create_plots.py
           python3 -m unittest test_correlations.py
+          python3 -m unittest test_cell_slicer.py
+          python3 -m unittest test_normalize_df.py
 
   run_func_tests:
     runs-on: ubuntu-latest
@@ -47,6 +49,8 @@ jobs:
           ./test_create_plots.sh
           chmod +x test_show_correlations.sh
           ./test_show_correlations.sh
+          ./test_cell_slicer.sh
+          ./test_normalize_data.sh
 
 
   # Run Code Style Check
