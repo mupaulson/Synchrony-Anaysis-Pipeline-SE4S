@@ -102,9 +102,13 @@ To add your own data to the snakemake pipeline:
     ```
     rule all:
         input:
- 91:        expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'sig'))
-     ```
-     edit the final string (currently 'sig') to any of these options: 'norm_out' (will end after normalizing data), 'correlation' (will end after making correlation matrix), 'sig' (will end with signifcant cell pairs), or 'top' (will end with top 1% of cells correlated).
+    91:     expand('../output_data/{out_file}', out_file=get_rule('../data/schedule_test.csv', 'sig'))
+    ```
+     edit the final string (currently 'sig') to any of these options: 
+     'norm_out' (will end after normalizing data), 
+     'correlation' (will end after making correlation matrix), 
+     'sig' (will end with signifcant cell pairs), 
+     'top' (will end with top 1% of cells correlated).
 
 12. Repeat step 8 to run snakemake with these changes
 
