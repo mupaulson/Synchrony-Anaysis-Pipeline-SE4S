@@ -49,7 +49,9 @@ jobs:
           ./test_create_plots.sh
           chmod +x test_show_correlations.sh
           ./test_show_correlations.sh
+          chmod +x test_cell_slicer.sh
           ./test_cell_slicer.sh
+          chmod +x test_normalize_data.sh
           ./test_normalize_data.sh
 
 

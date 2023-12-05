@@ -6,6 +6,7 @@ from animal_data import AnimalData as ad
 import unittest
 import numpy as np
 
+
 class TestNormalize(unittest.TestCase):
 
     def test_normalize_df(self):
@@ -20,5 +21,5 @@ class TestNormalize(unittest.TestCase):
         ani_data = ad.from_csv('../data/4807-test.csv')
         result = normalize_data.normalize_df(ani_data, cells=[1, 2, 3])
         self.assertIsNone(result)
-        
+
     #  because we load data into the class structure, can't have value error
